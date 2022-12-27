@@ -12,3 +12,68 @@ Scala macros to have fluent copy on case class
 ```sbt
 libraryDependencies += "com.github.geirolz" %% "fluent-copy" % "<version>"
 ```
+
+- `copyWith` when `true` adds a method `with$FIELD_NAME(newvalue: $FIELD_TYPE): $CASE_CLASS`.
+- `update` when `true` adds a method `update$FIELD_NAME(f: $FIELD_TYPE => $FIELD_TYPE): $CASE_CLASS`.
+- `collection` when `true` adds methods:
+    - For `Option`
+        - `withSome$FIELD_NAME(f: $FIELD_COLLECTION_TYPE): $CASE_CLASS`
+        - `withNone$FIELD_NAME: $CASE_CLASS`
+    - For collections `Seq`, `List`, `Set`
+        - `withOne$FIELD_NAME(f: $FIELD_COLLECTION_TYPE): $CASE_CLASS`
+        - `withEmpty$FIELD_NAME: $CASE_CLASS`
+
+```scala
+import com.geirolz.macros.fluent.copy.FluentCopy
+
+@FluentCopy(copyWith = true, update = true, collection = true)
+case class Foo(
+  value: Int,
+  option: Option[Double],
+  list: List[String],
+  set: Set[String],
+  seq: Seq[String]
+)
+```
+
+Generates
+
+```scala
+implicit class FooFluentConfigOps(i: Foo) {
+  def withValue(value: Int): Foo = ???
+
+  def updateValue(f: Int => Int): Foo = ???
+
+  def withOption(option: Option[Double]): Foo = ???
+
+  def updateOption(f: Option[Double] => Option[Double]): Foo = ???
+
+  def withSomeOption(option: Double): Foo = ???
+
+  def withNoneOption: Foo = ???
+
+  def withList(list: List[String]): Foo = ???
+
+  def updateList(f: List[String] => List[String]): Foo = ???
+
+  def withOneList(list: String): Foo = ???
+
+  def withEmptyList: Foo = ???
+
+  def withSet(set: Set[String]): Foo = ???
+
+  def updateSet(f: Set[String] => Set[String]): Foo = ???
+
+  def withOneSet(set: String): Foo = ???
+
+  def withEmptySet: Foo = ???
+
+  def withSeq(seq: Seq[String]): Foo = ???
+
+  def updateSeq(f: Seq[String] => Seq[String]): Foo = ???
+
+  def withOneSeq(seq: String): Foo = ???
+
+  def withEmptySeq: Foo = ???
+}
+```
