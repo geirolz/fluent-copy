@@ -24,4 +24,25 @@ class FluentCopySuite extends munit.FunSuite {
       )
     )
   }
+
+  test("Fluent update") {
+
+    val foo: Foo = Foo(
+      a = 1,
+      b = List("a", "b"),
+      c = None
+    )
+
+    assertEquals(
+      foo
+        .updateA(_ + 9)
+        .updateB(_ :+ "c")
+        .updateC(_ => Some(1.99)),
+      Foo(
+        a = 10,
+        b = List("a", "b", "c"),
+        c = Some(1.99)
+      )
+    )
+  }
 }

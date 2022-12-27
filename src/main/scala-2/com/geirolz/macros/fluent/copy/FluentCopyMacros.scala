@@ -45,9 +45,12 @@ object FluentCopyMacros {
 
       def implicitFluentCopyOps(className: c.TypeName, fields: List[Trees#Tree]): c.Tree = {
 
-        val newMethods = fields.map { case q"$_ val $tname: $tpt = $_" =>
-          val methodName = TermName(s"with${tname.toString().capitalize}")
-          q"def $methodName($tname: $tpt): $className = i.copy($tname = $tname)"
+        val newMethods = fields.flatMap { case q"$_ val $tname: $tpt = $_" =>
+          val normName = tname.toString().capitalize
+          Seq(
+            q"def ${TermName(s"with$normName")}($tname: $tpt): $className = i.copy($tname = $tname)",
+            q"def ${TermName(s"update$normName")}(f: $tpt => $tpt): $className = i.copy($tname = f(i.$tname))"
+          )
         }
 
         val opsName: c.universe.TypeName = TypeName(s"${className.toTermName}FluentConfigOps")
