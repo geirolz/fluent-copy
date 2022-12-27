@@ -6,14 +6,14 @@ import scala.reflect.macros.whitebox
 
 @compileTimeOnly("enable macro paradise")
 class FluentCopy(
-  @unused copy: Boolean       = FluentCopy.defaultCopyStatus,
+  @unused copyWith: Boolean   = FluentCopy.defaultCopyWithStatus,
   @unused update: Boolean     = FluentCopy.defaultUpdateStatus,
   @unused collection: Boolean = FluentCopy.defaultCollectionStatus
 ) extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro FluentCopyMacros.impl
 }
 object FluentCopy {
-  val defaultCopyStatus: Boolean       = true
+  val defaultCopyWithStatus: Boolean   = true
   val defaultUpdateStatus: Boolean     = true
   val defaultCollectionStatus: Boolean = false
 }
@@ -22,7 +22,7 @@ object FluentCopyMacros {
   def impl(c: whitebox.Context)(annottees: c.Tree*): c.Expr[Any] = {
     import c.universe.*
 
-    val (isCopyEnabled, isUpdateEnabled, isAdvCollectionEnabled) =
+    val (isCopyWithEnabled, isUpdateEnabled, isAdvCollectionEnabled) =
       c.prefix.tree match {
         case Apply(Select(New(Ident(TypeName("FluentCopy"))), termNames.CONSTRUCTOR), args) =>
           val namedArgs = args.collect {
@@ -32,7 +32,7 @@ object FluentCopyMacros {
 
           (
             namedArgs
-              .getOrElse("copy", FluentCopy.defaultCopyStatus)
+              .getOrElse("copyWith", FluentCopy.defaultCopyWithStatus)
               .asInstanceOf[Boolean],
             namedArgs
               .getOrElse("update", FluentCopy.defaultUpdateStatus)
@@ -78,7 +78,7 @@ object FluentCopyMacros {
       val newMethods: Seq[c.universe.Tree] = fields.flatMap { case q"$_ val $tname: $tpt = $_" =>
         val normName = tname.toString().capitalize
         val base = Seq(
-          Option.when(isCopyEnabled)(
+          Option.when(isCopyWithEnabled)(
             q"def ${TermName(s"with$normName")}($tname: $tpt): $className = i.copy($tname = $tname)"
           ),
           Option.when(isUpdateEnabled)(

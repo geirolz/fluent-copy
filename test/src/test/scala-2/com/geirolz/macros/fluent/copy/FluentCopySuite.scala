@@ -2,7 +2,22 @@ package com.geirolz.macros.fluent.copy
 
 import com.geirolz.macros.fluent.copy.test.Foo
 
+import scala.collection.immutable.{Seq, Set}
+
 class FluentCopySuite extends munit.FunSuite {
+
+  test("Macro preserves existent companion object") {
+    assertEquals(
+      obtained = Foo.default,
+      expected = Foo(
+        value  = 1,
+        option = None,
+        list   = Nil,
+        set    = Set.empty,
+        seq    = Seq.empty
+      )
+    )
+  }
 
   test("Fluent copy") {
 
