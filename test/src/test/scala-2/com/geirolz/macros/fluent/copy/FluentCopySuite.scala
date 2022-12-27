@@ -7,20 +7,24 @@ class FluentCopySuite extends munit.FunSuite {
   test("Fluent copy") {
 
     val foo: Foo = Foo(
-      a = 1,
-      b = List("a", "b"),
-      c = None
+      value  = 1,
+      option = None,
+      list   = List("a", "b"),
+      set    = Set.empty,
+      seq    = Seq.empty
     )
 
     assertEquals(
       foo
-        .withA(10)
-        .withB(List("a", "b", "c"))
-        .withC(Some(1.99)),
+        .withValue(10)
+        .withOption(Some(1.99))
+        .withList(List("a", "b", "c")),
       Foo(
-        a = 10,
-        b = List("a", "b", "c"),
-        c = Some(1.99)
+        value  = 10,
+        option = Some(1.99),
+        list   = List("a", "b", "c"),
+        set    = Set.empty,
+        seq    = Seq.empty
       )
     )
   }
@@ -28,20 +32,24 @@ class FluentCopySuite extends munit.FunSuite {
   test("Fluent update") {
 
     val foo: Foo = Foo(
-      a = 1,
-      b = List("a", "b"),
-      c = None
+      value  = 1,
+      option = None,
+      list   = List("a", "b"),
+      set    = Set.empty,
+      seq    = Seq.empty
     )
 
     assertEquals(
       foo
-        .updateA(_ + 9)
-        .updateB(_ :+ "c")
-        .updateC(_ => Some(1.99)),
+        .updateValue(_ + 9)
+        .updateOption(_ => Some(1.99))
+        .updateList(_ :+ "c"),
       Foo(
-        a = 10,
-        b = List("a", "b", "c"),
-        c = Some(1.99)
+        value  = 10,
+        option = Some(1.99),
+        list   = List("a", "b", "c"),
+        set    = Set.empty,
+        seq    = Seq.empty
       )
     )
   }
@@ -49,32 +57,81 @@ class FluentCopySuite extends munit.FunSuite {
   test("Fluent copy with Option") {
 
     val fooNone: Foo = Foo(
-      a = 1,
-      b = Nil,
-      c = None
+      value  = 1,
+      option = None,
+      list   = Nil,
+      set    = Set.empty,
+      seq    = Seq.empty
     )
 
     val fooSome: Foo = Foo(
-      a = 1,
-      b = Nil,
-      c = Some(1)
+      value  = 1,
+      option = Some(1),
+      list   = Nil,
+      set    = Set.empty,
+      seq    = Seq.empty
     )
 
     assertEquals(
-      fooNone.withSomeC(1.99),
+      fooNone.withSomeOption(1.99),
       Foo(
-        a = 1,
-        b = Nil,
-        c = Some(1.99)
+        value  = 1,
+        option = Some(1.99),
+        list   = Nil,
+        set    = Set.empty,
+        seq    = Seq.empty
       )
     )
 
     assertEquals(
-      fooSome.withNoneC,
+      fooSome.withNoneOption,
       Foo(
-        a = 1,
-        b = Nil,
-        c = None
+        value  = 1,
+        option = None,
+        list   = Nil,
+        set    = Set.empty,
+        seq    = Seq.empty
+      )
+    )
+  }
+
+  test("Fluent copy with Seq") {
+
+    val fooNil: Foo = Foo(
+      value  = 1,
+      option = None,
+      list   = Nil,
+      set    = Set.empty,
+      seq    = Seq.empty
+    )
+
+    val fooFull: Foo = Foo(
+      value  = 1,
+      option = None,
+      list   = Nil,
+      set    = Set.empty,
+      seq    = Seq("a")
+    )
+
+    assertEquals(
+      fooNil.withOneSeq("a"),
+      Foo(
+        value  = 1,
+        option = None,
+        list   = Nil,
+        set    = Set.empty,
+        seq    = Seq("a")
+      )
+    )
+
+    assertEquals(
+      fooFull.withEmptySeq,
+      Foo(
+        value  = 1,
+        option = None,
+        list   = Nil,
+        set    = Set.empty,
+        seq    = Seq.empty
       )
     )
   }
@@ -82,32 +139,81 @@ class FluentCopySuite extends munit.FunSuite {
   test("Fluent copy with List") {
 
     val fooNil: Foo = Foo(
-      a = 1,
-      b = Nil,
-      c = None
+      value  = 1,
+      list   = Nil,
+      option = None,
+      set    = Set.empty,
+      seq    = Seq.empty
     )
 
     val fooFull: Foo = Foo(
-      a = 1,
-      b = List("a"),
-      c = None
+      value  = 1,
+      list   = List("a"),
+      option = None,
+      set    = Set.empty,
+      seq    = Seq.empty
     )
 
     assertEquals(
-      fooNil.withOneB("a"),
+      fooNil.withOneList("a"),
       Foo(
-        a = 1,
-        b = List("a"),
-        c = None
+        value  = 1,
+        option = None,
+        list   = List("a"),
+        set    = Set.empty,
+        seq    = Seq.empty
       )
     )
 
     assertEquals(
-      fooFull.withEmptyB,
+      fooFull.withEmptyList,
       Foo(
-        a = 1,
-        b = Nil,
-        c = None
+        value  = 1,
+        option = None,
+        list   = Nil,
+        set    = Set.empty,
+        seq    = Seq.empty
+      )
+    )
+  }
+
+  test("Fluent copy with Set") {
+
+    val fooNil: Foo = Foo(
+      value  = 1,
+      option = None,
+      list   = Nil,
+      set    = Set("a"),
+      seq    = Seq.empty
+    )
+
+    val fooFull: Foo = Foo(
+      value  = 1,
+      option = None,
+      list   = Nil,
+      set    = Set.empty,
+      seq    = Seq.empty
+    )
+
+    assertEquals(
+      fooNil.withOneSet("a"),
+      Foo(
+        value  = 1,
+        option = None,
+        list   = Nil,
+        set    = Set("a"),
+        seq    = Seq.empty
+      )
+    )
+
+    assertEquals(
+      fooFull.withEmptySet,
+      Foo(
+        value  = 1,
+        option = None,
+        list   = Nil,
+        set    = Set.empty,
+        seq    = Seq.empty
       )
     )
   }
