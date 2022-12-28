@@ -10,7 +10,7 @@
 Scala macros to have fluent copy on case classes
 
 ```sbt
-libraryDependencies += "com.github.geirolz" %% "fluent-copy" % "<version>"
+libraryDependencies += "com.github.geirolz" %% "fluent-copy" % "0.0.1"
 ```
 
 - `copyWith` when `true` adds a method `with$FIELD_NAME(newvalue: $FIELD_TYPE): $CASE_CLASS`.
