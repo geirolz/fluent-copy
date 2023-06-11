@@ -18,7 +18,7 @@ object ProjectDependencies {
 
   object Core {
     val dedicated: Seq[ModuleID] = Seq(
-      "org.scala-lang" % "scala-reflect" % "2.13.10"
+      "org.scala-lang" % "scala-reflect" % "2.13.11"
     )
   }
 
