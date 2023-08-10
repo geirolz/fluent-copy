@@ -10,7 +10,8 @@ lazy val supportedScalaVersions = List(scala213, scala33)
 
 //## global project to no publish ##
 val copyReadMe = taskKey[Unit]("Copy generated README to main folder.")
-lazy val `fluent-copy`: Project = project
+lazy val root: Project = project
+  .in(file("."))
   .settings(
     inThisBuild(
       List(
@@ -60,39 +61,40 @@ lazy val docs: Project =
     )
 
 lazy val core: Project =
-  project
-    .in(file("."))
-    .settings(
-      baseSettings,
-      name        := prjName,
-      description := moduleName.value,
-      libraryDependencies ++= Seq(
-        ProjectDependencies.Core.dedicated
-      ).flatten
-    )
+  module("core")(
+    folder = "./core",
+    publishAs = Some(prjName)
+  ).settings(
+    libraryDependencies ++= ProjectDependencies.Core.dedicated
+  )
 
 lazy val test: Project =
-  buildModule(
-    prjModuleName = "test",
-    toPublish     = false,
-    folder        = "."
+  module("test")(
+    folder        = "./test",
+    publishAs     = None,
   ).dependsOn(core)
 
 //=============================== MODULES UTILS ===============================
-def buildModule(prjModuleName: String, toPublish: Boolean, folder: String): Project = {
-  val keys    = prjModuleName.split("-")
-  val docName = keys.mkString(" ")
-  val prjFile = file(s"$folder/$prjModuleName")
-
-  Project(prjModuleName, prjFile)
+def module(modName: String)(folder: String, publishAs: Option[String]): Project = {
+  val keys       = modName.split("-")
+  val modDocName = keys.mkString(" ")
+  val publishSettings = publishAs match {
+    case Some(pubName) =>
+      Seq(
+        moduleName := pubName,
+        publish / skip := false
+      )
+    case None => noPublishSettings
+  }
+  Project(modName, file(folder))
     .settings(
-      description    := moduleName.value,
-      moduleName     := s"$prjName-$prjModuleName",
-      name           := s"$prjName $docName",
-      publish / skip := !toPublish,
+      name := s"$prjName $modDocName",
+      publishSettings,
       baseSettings
     )
 }
+
+def subProjectName(modPublishName: String): String = s"$prjName-$modPublishName"
 
 //=============================== SETTINGS ===============================
 lazy val noPublishSettings: Seq[Def.Setting[_]] = Seq(
