@@ -62,7 +62,7 @@ lazy val docs: Project =
 
 lazy val core: Project =
   module("core")(
-    folder = "./core",
+    folder    = "./core",
     publishAs = Some(prjName)
   ).settings(
     libraryDependencies ++= ProjectDependencies.Core.dedicated
@@ -70,8 +70,8 @@ lazy val core: Project =
 
 lazy val test: Project =
   module("test")(
-    folder        = "./test",
-    publishAs     = None,
+    folder    = "./test",
+    publishAs = None
   ).dependsOn(core)
 
 //=============================== MODULES UTILS ===============================
@@ -81,7 +81,7 @@ def module(modName: String)(folder: String, publishAs: Option[String]): Project 
   val publishSettings = publishAs match {
     case Some(pubName) =>
       Seq(
-        moduleName := pubName,
+        moduleName     := pubName,
         publish / skip := false
       )
     case None => noPublishSettings
